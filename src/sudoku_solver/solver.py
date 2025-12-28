@@ -130,6 +130,9 @@ def find_unique_intersections(matrix: list[list[int]]) -> list[tuple[int, int, i
                 # If intersection has exactly one element, add it to results
                 if len(intersection) == 1:
                     unique_value = intersection.pop()
+                    print(
+                        f"Interseção única encontrada na linha {row_index}, coluna {col_index}: {unique_value}"
+                    )
                     result.append((row_index, col_index, unique_value))
 
     return result

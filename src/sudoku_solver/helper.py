@@ -49,7 +49,7 @@ def read_sudoku_csv(file_path: str = "sudoku.csv") -> List[List[int]]:
     csv_path = Path(file_path)
 
     if not csv_path.exists():
-        raise FileNotFoundError(f"Sudoku CSV file not found: {file_path}")
+        raise FileNotFoundError(f"Arquivo CSV do Sudoku não encontrado: {file_path}")
 
     matrix = []
 
@@ -59,13 +59,13 @@ def read_sudoku_csv(file_path: str = "sudoku.csv") -> List[List[int]]:
         for row_index, row in enumerate(reader):
             if row_index >= 9:
                 raise ValueError(
-                    f"CSV file has more than 9 rows. Found row at index {row_index}"
+                    f"Arquivo CSV tem mais de 9 linhas. Linha encontrada no índice {row_index}"
                 )
 
             # Ensure we have exactly 9 columns
             if len(row) != 9:
                 raise ValueError(
-                    f"Row {row_index} has {len(row)} columns, expected 9. Found: {row}"
+                    f"Linha {row_index} tem {len(row)} colunas, esperado 9. Encontrado: {row}"
                 )
 
             # Convert each cell to integer (empty strings become 0)
@@ -80,25 +80,25 @@ def read_sudoku_csv(file_path: str = "sudoku.csv") -> List[List[int]]:
                         # Validate that the value is in the valid range (0-9)
                         if cell_value < 0 or cell_value > 9:
                             raise ValueError(
-                                f"Value out of range at row {row_index}, column {col_index}: '{cell}'. "
-                                f"Expected a number from 0-9 (0 for empty, 1-9 for filled cells)."
+                                f"Valor fora do intervalo na linha {row_index}, coluna {col_index}: '{cell}'. "
+                                f"Esperado um número de 0-9 (0 para vazio, 1-9 para células preenchidas)."
                             )
                         matrix_row.append(cell_value)
                     except ValueError as e:
                         # Re-raise if it's our custom validation error
-                        if "Value out of range" in str(e):
+                        if "Valor fora do intervalo" in str(e):
                             raise
                         # Otherwise, it's a conversion error
                         raise ValueError(
-                            f"Invalid value at row {row_index}, column {col_index}: '{cell}'. "
-                            f"Expected a number from 0-9 (0 for empty, 1-9 for filled cells)."
+                            f"Valor inválido na linha {row_index}, coluna {col_index}: '{cell}'. "
+                            f"Esperado um número de 0-9 (0 para vazio, 1-9 para células preenchidas)."
                         ) from e
 
             matrix.append(matrix_row)
 
     # Ensure we have exactly 9 rows
     if len(matrix) != 9:
-        raise ValueError(f"CSV file has {len(matrix)} rows, expected 9")
+        raise ValueError(f"Arquivo CSV tem {len(matrix)} linhas, esperado 9")
 
     return matrix
 
@@ -116,7 +116,7 @@ def print_sudoku_matrix(matrix: List[List[int]]) -> None:
         matrix: A 9x9 matrix (list of lists) containing integers from 0-9.
     """
     print("\n" + "═" * 37)
-    print(" " * 12 + "SUDOKU PUZZLE")
+    print(" " * 12 + "QUEBRA-CABEÇA SUDOKU")
     print("═" * 37)
 
     for row_index, row in enumerate(matrix):
@@ -198,3 +198,17 @@ def is_valid_sudoku(matrix: List[List[int]]) -> bool:
                 return False
 
     return True
+
+
+def is_solved_sudoku(matrix: List[List[int]]) -> bool:
+    """
+    Verify if the input 9x9 Sudoku matrix is solved.
+
+    A solved Sudoku matrix must satisfy:
+    - All rows must have no repeated values (empty/0 values are allowed and ignored)
+    - All columns must have no repeated values (empty/0 values are allowed and ignored)
+    - All 9 3x3 boxes must have no repeated values (empty/0 values are allowed and ignored)
+    """
+    return is_valid_sudoku(matrix) and all(
+        all(cell != 0 for cell in row) for row in matrix
+    )

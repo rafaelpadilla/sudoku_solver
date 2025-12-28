@@ -1,32 +1,40 @@
-from sudoku_solver.helper import read_sudoku_csv, print_sudoku_matrix
+from sudoku_solver.helper import (
+    is_solved_sudoku,
+    is_valid_sudoku,
+    read_sudoku_csv,
+    print_sudoku_matrix,
+)
 from sudoku_solver.solver import (
     find_unique_intersections,
-    get_missing_numbers_in_columns,
-    get_missing_numbers_in_rows,
 )
 
 sudoku_matrix = read_sudoku_csv("sudoku.csv")
 
+if not is_valid_sudoku(sudoku_matrix):
+    print("Matriz de Sudoku inválida")
+    exit(1)
+
 # Print the sudoku matrix
 print_sudoku_matrix(sudoku_matrix)
 
-# Get missing numbers in each row
-missing_numbers = get_missing_numbers_in_rows(sudoku_matrix)
-# Display missing numbers for each row
-print("Missing numbers per row:")
-for row_index, missing in enumerate(missing_numbers):
-    print(f"Row {row_index}: {missing}")
+while True:
+    # Find unique intersections
+    unique_intersections = find_unique_intersections(sudoku_matrix)
 
-# Get missing numbers in each column
-missing_numbers_in_columns = get_missing_numbers_in_columns(sudoku_matrix)
-# Display missing numbers for each column
-print("Missing numbers per column:")
-for col_index, missing in enumerate(missing_numbers):
-    print(f"Column {col_index}: {missing}")
+    # Check condition after first iteration - if no intersections found, break
+    if not unique_intersections:
+        print("Não há mais interseções únicas")
+        break
 
-# Find unique intersections
-unique_intersections = find_unique_intersections(sudoku_matrix)
-# Display unique intersections
-print("Unique intersections:")
-for row_index, col_index, value in unique_intersections:
-    print(f"Row {row_index}, Column {col_index}: {value}")
+    # Fill unique intersections in the sudoku matrix
+    for row_index, col_index, value in unique_intersections:
+        sudoku_matrix[row_index][col_index] = value
+
+    # Print the sudoku matrix
+    print_sudoku_matrix(sudoku_matrix)
+
+# Check if the sudoku matrix is solved
+if is_solved_sudoku(sudoku_matrix):
+    print("Sudoku resolvido! Sua teoria está correta!")
+else:
+    print("Sudoku não resolvido! Sua teoria está errada!")
